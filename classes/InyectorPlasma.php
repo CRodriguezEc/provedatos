@@ -3,12 +3,19 @@
 class InyectorPlasma
 {
 
-    private $_flujoPlasma = 100;
+    private $_flujoPlasma;
     private $_puntoDanio;
+    private $_sobreFlujoPlasma;
 
-    public function __construct()
+    public function __construct( $flujoPlasma, $puntoDanio )
     {
-        return;
+        $this->_flujoPlasma = $flujoPlasma;
+        $this->_puntoDanio  = $puntoDanio;
+    }
+
+    public function setFlujoPlasma( $flujoPlasma )
+    {
+        $this->_flujoPlasma = $flujoPlasma;
     }
 
     public function setPuntoDanio( $puntoDanio )
@@ -17,32 +24,39 @@ class InyectorPlasma
                                                     : -1;
     }
 
-    private function _calculoSobreFlujoPlasma()
+    public function addSobreFlujoPlasma( $sobreFlujoPlasma )
     {
-        $rst = $this->_flujoPlasma;
-
-        if( $this->_flujoPlasma < 199 ){
-            $rst = $this->_flujoPlasma - 100;
-        }else{
-            $rst = 0;
+        $this->_sobreFlujoPlasma = $sobreFlujoPlasma;
+        
+        $this->_flujoPlasma = ( $this->_sobreFlujoPlasma <= 99 )? $this->calculoFlujoMaximo() + $this->_sobreFlujoPlasma 
+                                                                : $this->_flujoPlasma;
+    }
+    
+    public function calculoTiempoFuncionamiento()
+    {
+        switch( true ){
+            case( $this->_sobreFlujoPlasma >= 99 ) : 
+                $ctf = 1;
+            break;
+        
+            case( $this->_flujoPlasma > 100 ): 
+                $ctf = 100 - ( $this->_flujoPlasma - 100 );
+            break;
+        
+            default: 
+                $ctf = 'infinito';
+            break;
         }
-
-        return $rst;
+        
+        return $ctf;
     }
 
-    public function getTiempoFuncionamiento()
+    public function calculoFlujoMaximo()
     {
-        return $this->_calculoSobreFlujoPlasma();
-    }
+        $cfm = ( $this->_puntoDanio < 100 ) ? $this->_flujoPlasma - $this->_puntoDanio
+                                            : 'Unable to comply';
 
-    public function calculoFlujoFuncionamiento()
-    {
-        $sobreFlujo = $this->_calculoSobreFlujoPlasma();
-
-        $flujoFuncionamiento = ( $sobreFlujo != 0 ) ? $sobreFlujo - $this->_puntoDanio 
-                                                    : 'Unable to cumply';
-
-        return $flujoFuncionamiento;
+        return $cfm;
     }
 
 }
