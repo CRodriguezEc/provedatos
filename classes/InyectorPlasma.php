@@ -3,60 +3,21 @@
 class InyectorPlasma
 {
 
-    private $_flujoPlasma;
     private $_puntoDanio;
-    private $_sobreFlujoPlasma;
 
-    public function __construct( $flujoPlasma, $puntoDanio )
+    public function __construct( $puntoDanio = 0 )
     {
-        $this->_flujoPlasma = $flujoPlasma;
-        $this->_puntoDanio  = $puntoDanio;
+        $this->_puntoDanio = $puntoDanio;
     }
 
-    public function setFlujoPlasma( $flujoPlasma )
+    public function calculoFlujoPermitido()
     {
-        $this->_flujoPlasma = $flujoPlasma;
+        return 100 - $this->_puntoDanio;
     }
 
-    public function setPuntoDanio( $puntoDanio )
+    public function calculoFlujoFuncionamiento( $incremento )
     {
-        $this->_puntoDanio = ( $puntoDanio < 100 )  ? $puntoDanio 
-                                                    : -1;
-    }
-
-    public function addSobreFlujoPlasma( $sobreFlujoPlasma )
-    {
-        $this->_sobreFlujoPlasma = $sobreFlujoPlasma;
-        
-        $this->_flujoPlasma = ( $this->_sobreFlujoPlasma <= 99 )? $this->calculoFlujoMaximo() + $this->_sobreFlujoPlasma 
-                                                                : $this->_flujoPlasma;
-    }
-    
-    public function calculoTiempoFuncionamiento()
-    {
-        switch( true ){
-            case( $this->_sobreFlujoPlasma >= 99 ) : 
-                $ctf = 1;
-            break;
-        
-            case( $this->_flujoPlasma > 100 ): 
-                $ctf = 100 - ( $this->_flujoPlasma - 100 );
-            break;
-        
-            default: 
-                $ctf = 'infinito';
-            break;
-        }
-        
-        return $ctf;
-    }
-
-    public function calculoFlujoMaximo()
-    {
-        $cfm = ( $this->_puntoDanio < 100 ) ? $this->_flujoPlasma - $this->_puntoDanio
-                                            : 'Unable to comply';
-
-        return $cfm;
+        return $this->calculoFlujoPermitido() + $incremento;
     }
 
 }
